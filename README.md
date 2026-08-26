@@ -49,13 +49,22 @@ jobs:
 
 ## Local CLI Usage
 
+First, install the package locally:
+```bash
+pip install -e .
+```
+
+Then you can use the installed CLI command or run the module directly:
+
 ```bash
 # Scan a specific file or directory
+momus-firewall src/
+# OR
 python3 -m momus_firewall.cli src/
 
 # Scan with an allowlist
-python3 -m momus_firewall.cli src/ --allowlist allowlist.json
+momus-firewall src/ --allowlist allowlist.json
 
 # Scan a unified diff patch
-python3 -m momus_firewall.cli patch.diff --diff
+momus-firewall patch.diff --diff
 ```

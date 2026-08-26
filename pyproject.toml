@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "momus-agent-firewall"
+version = "0.1.0"
+description = "An adversarial audit layer designed to sit in front of agentic systems."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+momus-firewall = "momus_firewall.cli:main"
