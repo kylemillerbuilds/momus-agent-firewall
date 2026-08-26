@@ -1,0 +1,21 @@
+name: "Momus Agent Firewall"
+description: "Scans AI-generated PRs/diffs for malicious injections, hallucinated wallet addresses, and env var laxness."
+inputs:
+  path:
+    description: "The path to scan (file or directory)"
+    required: true
+    default: "."
+  allowlist:
+    description: "Path to a JSON file containing an allowlist of strings (e.g. valid wallets)"
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Run Momus Firewall
+      shell: bash
+      run: |
+        ALLOWLIST_ARG=""
+        if [ -n "${{ inputs.allowlist }}" ]; then
+          ALLOWLIST_ARG="--allowlist ${{ inputs.allowlist }}"
+        fi
+        PYTHONPATH=${GITHUB_ACTION_PATH} python3 -m momus_firewall.cli "${{ inputs.path }}" $ALLOWLIST_ARG
