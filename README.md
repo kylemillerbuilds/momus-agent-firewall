@@ -1,10 +1,27 @@
 # Momus Agent Firewall
 
-The **Momus Agent Firewall** is a standalone, adversarial auditing gate designed to catch security-critical hallucinations and rogue injections from AI coding agents (like Claude, Gemini, and OpenAI models) before they hit production.
+A deterministic scanner for AI-generated diffs. It flags a short list of things coding agents get
+wrong in ways that survive code review, and fails the build on them. It does not try to judge
+intent, and it never decides a value is safe because a comment says so.
 
-A recent incident proved that even advanced agents can confidently hallucinate and inject unauthorized Ethereum/Solana wallet addresses, completely bypassing traditional CI/CD checks because the agent fabricated convincing code comments to justify the injection. 
+## Why it exists
 
-This tool acts as a strict firewall for AI-generated Pull Requests and diffs, enforcing deterministic boundaries on probabilistic agents.
+A payment address in one of my own projects carried a code comment asserting it was my verified
+wallet. It was not mine. That comment stood for five weeks, through a grant application and past
+two separate reviews, because every check that looked at it read the comment.
+
+When an agent later changed that address, my own audit called the change unauthorized and published
+that conclusion. **I was wrong the second time too** — I opened my wallet app and the change turned
+out to have been sanctioned. Both halves of that episode produced a confident, well-cited, wrong
+claim about who owned an address.
+
+The lesson was narrower and more useful than "agents go rogue," which is not what happened:
+
+> **A label cannot corroborate itself, and a commit identity proves whose machine ran, never whose
+> wallet it is.**
+
+So Momus checks values against an allowlist a human maintains, rather than against the
+justification sitting next to them in the diff.
 
 ## The Threat Model (Why this exists)
 
@@ -26,7 +43,9 @@ AI agents encountering friction (like SSL errors or permission issues) will ofte
 AIs frequently write code that appears complete but contains synthetic placeholders, leaving the code broken for production.
 * **The Momus Fix:** Scans for and blocks common LLM placeholder syntaxes like `YOUR_KEY_HERE`, `[REDACTED]`, or `TODO: implement auth`, forcing the agent to finish the job.
 
-*Sources: Verified via Web Security Audits (Sysdig, Orbis AppSec) and internal anthropic/sandbox telemetry on boundary-probing agents.*
+*These four come from running agents against my own repos, not from a survey. Each one is a
+pattern I hit and then wrote a check for. Treat the list as a starting point rather than a
+taxonomy.*
 
 ## Usage as a GitHub Action
 
