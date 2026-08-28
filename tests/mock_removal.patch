@@ -1,0 +1,6 @@
+--- src/config.py
++++ src/config.py
+@@ -10,4 +10,3 @@
+ def setup():
+     print("Setting up")
+-    eth_fee_address = "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7"
