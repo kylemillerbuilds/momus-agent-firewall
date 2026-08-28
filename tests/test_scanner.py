@@ -84,7 +84,7 @@ def test_negative_control_no_fallback():
     line_9_env = [f for f in findings if f.rule_name == "Env Strictness" and f.line_number == 9]
     assert len(line_9_env) == 0
 
-def test_allowlist_matches_by_substring_documented_behavior():
+def test_allowlist_matches_exactly():
     with open(TESTS_DIR / "allowlist.json", "r") as f:
         allowlist = json.load(f)
     
@@ -101,7 +101,17 @@ def test_allowlist_matches_by_substring_documented_behavior():
     assert len(missing) == 1
     assert missing[0].content == "0x0000000000000000000000000000000000000000"
     assert missing[0].line_number == 19
-    # Pinning mechanism honestly: is_allowlisted uses a substring check (`if allowed in text`), so it matches by substring
+
+def test_negative_control_exact_match_only():
+    scanner_no = MomusScanner()
+    findings_no = scanner_no.scan_file(str(TESTS_DIR / "mock_malicious.py"))
+    
+    # 0x8920 is a prefix of 0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7 at line 13
+    scanner_partial = MomusScanner(allowlist=["0x8920"])
+    findings_partial = scanner_partial.scan_file(str(TESTS_DIR / "mock_malicious.py"))
+    
+    # Under exact matching, the finding at line 13 is NOT suppressed
+    assert len(findings_no) - len(findings_partial) == 0
 
 def test_scan_diff_findings():
     scanner = MomusScanner()

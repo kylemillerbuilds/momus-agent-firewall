@@ -38,10 +38,7 @@ class MomusScanner:
         self.placeholder_regex = re.compile(r'(YOUR_[A-Z0-9_]+_HERE|\[REDACTED\]|<insert\s+[^>]+>|TODO:\s*implement\s+(?:auth|logic|security))', re.IGNORECASE)
 
     def is_allowlisted(self, text: str) -> bool:
-        for allowed in self.allowlist:
-            if allowed in text:
-                return True
-        return False
+        return text in self.allowlist
 
     def scan_line(self, line: str, file_path: str, line_number: int) -> List[Finding]:
         findings = []
