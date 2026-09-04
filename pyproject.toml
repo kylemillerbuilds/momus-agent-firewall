@@ -4,11 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "momus-agent-firewall"
-version = "0.1.0"
-description = "An adversarial audit layer designed to sit in front of agentic systems."
+version = "0.2.0"
+description = "A deterministic firewall for AI coding agents: four rules that read the code, seven that read the agent's report."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
 
 [project.scripts]
 momus-firewall = "momus_firewall.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["claims", ".git", "__pycache__", "build", "dist"]

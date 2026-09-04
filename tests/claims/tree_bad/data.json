@@ -1,0 +1,5 @@
+[{"ticker": "ADS", "status": "oversubscribed", "shares_tendered": 99724},
+ {"ticker": "BKE", "status": "oversubscribed", "shares_tendered": 4100},
+ {"ticker": "CVBF", "status": "not_oversubscribed", "shares_tendered": 900},
+ {"ticker": "DNOW", "status": "undetermined", "shares_tendered": null},
+ {"ticker": "EXPO", "status": "oversubscribed", "shares_tendered": 2200}]

@@ -1,0 +1,12 @@
+diff --git a/app/views.py b/app/views.py
+--- a/app/views.py
++++ b/app/views.py
+@@ -10,7 +10,8 @@ from flask import request
+ @login_required
+ def export_report(user_id):
+     assert user_id == current_user.id
+-    rows = fetch(user_id)
++    rows = fetch(user_id, limit=500)
++    log.info("export %s rows", len(rows))
+     resp = requests.get(url, verify=True, timeout=5)
+     return render(rows)

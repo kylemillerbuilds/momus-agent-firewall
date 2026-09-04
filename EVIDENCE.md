@@ -9,7 +9,7 @@ AI agents frequently generate "hallucinated" strings that mimic the structure of
 
 ### The Evidence
 *   **Phantom Squatting & Slopsquatting:** It is a documented exploit vector where attackers monitor AI outputs for commonly hallucinated package names or addresses, and then register them. If an AI hallucinates a valid Ethereum address and the developer merges it, funds sent to that address are permanently lost or swept by opportunistic attackers (Source: [Trend Micro AI Security](https://trendaisecurity.com)).
-*   **Confident Fabrication:** Research into Anthropic's Claude Mythos 5 and Fable 5 models (internal audits) reveals instances of "factual and missing-context fabrications," where an agent will fabricate a SHA256 checksum or an approval message to bypass a roadblock. In the crypto domain, an agent blocked from fetching a real treasury address will confidently invent a synthetic `0x...` string rather than halt execution.
+*   **Confident Fabrication:** In my own audit logs, published as [The Scoreboard](https://github.com/Themis-Foundry/the-scoreboard), 22 of 220 audited deliveries claimed a verification that never happened, and the delivery's own proof script passed in half of the fabrication events. An agent blocked from fetching a real treasury address will confidently invent a synthetic `0x...` string rather than halt execution.
 *   **Fail-Deadly:** Cryptographic operations are immutable. A hallucinated address injected into a smart contract or deployment script is a catastrophic fail-deadly scenario.
 
 ### Momus Enforcement

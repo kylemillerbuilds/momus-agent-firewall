@@ -11,6 +11,7 @@ class Finding:
     line_number: int
     content: str
     message: str
+    fix: str = ""
 
 class MomusScanner:
     def __init__(self, allowlist: Optional[List[str]] = None):
@@ -29,9 +30,12 @@ class MomusScanner:
 
         # Rule 3: The "Sledgehammer" Catcher
         self.sledgehammer_patterns = [
-            (re.compile(r'chmod\s+777'), "AI taking permission shortcuts (chmod 777). Use least-privilege."),
-            (re.compile(r'verify\s*=\s*False'), "AI disabling SSL verification. This permits Man-in-the-Middle attacks."),
-            (re.compile(r'shell\s*=\s*True'), "AI using shell=True in subprocess. This introduces command injection risks.")
+            (re.compile(r'chmod\s+777'), "AI taking permission shortcuts (chmod 777). Use least-privilege.",
+             "Set the narrowest mode that works (for example 755 or 600) and say which file needed it and why."),
+            (re.compile(r'verify\s*=\s*False'), "AI disabling SSL verification. This permits Man-in-the-Middle attacks.",
+             "Leave verification on. If a certificate fails, fix the certificate or pin the CA bundle; do not turn the check off."),
+            (re.compile(r'shell\s*=\s*True'), "AI using shell=True in subprocess. This introduces command injection risks.",
+             "Pass the command as a list with shell=False. If you need a pipe, build it with two Popen calls.")
         ]
 
         # Rule 4: "Lazy Agent" Placeholders
@@ -52,7 +56,8 @@ class MomusScanner:
                     file_path=file_path,
                     line_number=line_number,
                     content=match_text,
-                    message="Detected non-allowlisted EVM wallet address. AIs may hallucinate rogue addresses."
+                    message="Detected non-allowlisted EVM wallet address. AIs may hallucinate rogue addresses.",
+                    fix="Do not invent or copy an address. Read it from the human-maintained allowlist, or ask for it and stop."
                 ))
                 
         # Check Solana addresses
@@ -65,7 +70,8 @@ class MomusScanner:
                         file_path=file_path,
                         line_number=line_number,
                         content=match_text,
-                        message="Detected potential non-allowlisted Solana wallet address."
+                        message="Detected potential non-allowlisted Solana wallet address.",
+                        fix="Do not invent or copy an address. Read it from the human-maintained allowlist, or ask for it and stop."
                     ))
                 
         # Check Env Strictness
@@ -79,18 +85,20 @@ class MomusScanner:
                         file_path=file_path,
                         line_number=line_number,
                         content=line.strip(),
-                        message=f"Sensitive env var must not have a fallback. Use strict loading (e.g. os.environ['VAR'] or fail-fast) to prevent fail-open vulnerabilities."
+                        message=f"Sensitive env var must not have a fallback. Use strict loading (e.g. os.environ['VAR'] or fail-fast) to prevent fail-open vulnerabilities.",
+                        fix="Remove the default. Read the secret strictly so a missing value crashes at startup instead of running with a placeholder."
                     ))
 
         # Check Sledgehammers
-        for pattern, msg in self.sledgehammer_patterns:
+        for pattern, msg, fix in self.sledgehammer_patterns:
             if pattern.search(line):
                 findings.append(Finding(
                     rule_name="Sledgehammer Catcher",
                     file_path=file_path,
                     line_number=line_number,
                     content=line.strip(),
-                    message=msg
+                    message=msg,
+                    fix=fix
                 ))
 
         # Check Lazy Agent Placeholders
@@ -100,7 +108,8 @@ class MomusScanner:
                 file_path=file_path,
                 line_number=line_number,
                 content=line.strip(),
-                message=f"Detected synthetic placeholder: '{ph_match.group(1)}'. AI agent failed to implement actual logic."
+                message=f"Detected synthetic placeholder: '{ph_match.group(1)}'. AI agent failed to implement actual logic.",
+                fix="Finish the work behind the placeholder. If you cannot, stop and say what is missing instead of leaving a stand-in."
             ))
                 
         return findings
