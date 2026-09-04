@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
 
+[tool.setuptools]
+packages = ["momus_firewall"]
+
 [project.scripts]
 momus-firewall = "momus_firewall.cli:main"
 
